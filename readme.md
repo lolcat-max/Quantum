@@ -77,7 +77,7 @@ TROUBLESHOOTING:
 - Weak signal? Add more salt (up to 20g)
 - Erratic readings? Shield with aluminum foil
 
-YOU'RE DONE! You now have a working quantum computer.
+YOU'RE DONE! You now have quantum spin liquid.
 
 
 ## What It Does

@@ -1,4 +1,4 @@
-// $35 Carbon Quantum Computer
+// $35 Carbon salt Quantum Computer
 // Upload to Arduino Nano, open serial monitor at 115200 baud
 
 #define ELECTRODE_X1 3

@@ -1,6 +1,5 @@
-# $35 Carbon Quantum Computer
+ASSEMBLY GUIDE - 30 MINUTES
 
-Control nuclear spins in salt water with Arduino + carbon electrodes.
 
 ## What You Need ($35)
 
@@ -21,14 +20,65 @@ Control nuclear spins in salt water with Arduino + carbon electrodes.
 4. **Upload code**: Open quantum_computer.ino in Arduino IDE, upload
 5. **Run**: Open serial monitor (115200), type commands
 
-## Commands
+STEP 1: PREPARE QUANTUM SOLUTION (10 min)
+1. Pour 50ml distilled water into jar
+2. Add 10g table salt (2 teaspoons)
+3. Stir until dissolved
+4. Add 5ml glycerin (1 teaspoon)
+5. Stir gently
 
-FIND - Find quantum resonance
-SUPER - Create superposition
-ECHO - Spin echo (proves quantum coherence)
-MEASURE - Read quantum state
+STEP 2: INSTALL ELECTRODES (5 min)
+1. Take 3 pencil leads (carbon electrodes)
+2. Attach wire to each with alligator clip
+3. Place in jar in triangle pattern
+4. Make sure they DON'T touch each other
+5. Electrodes should be fully submerged
 
-text
+STEP 3: WIRE ARDUINO (10 min)
+
+Arduino → L298N Driver:
+- 5V → 5V
+- GND → GND
+- D3 → IN1
+- D5 → IN2  
+- D6 → IN3
+- D9 → IN4
+
+L298N → Electrodes:
+- OUT1 → Electrode 1
+- OUT2 → Electrode 1 (other end)
+- OUT3 → Electrode 2
+- OUT4 → Electrode 2 (other end)
+
+Sensing:
+- A0 → thin wire in solution (voltage divider with 10kΩ resistor)
+
+STEP 4: UPLOAD CODE (5 min)
+1. Connect Arduino to computer via USB
+2. Open Arduino IDE
+3. Open quantum_computer.ino
+4. Select board: "Arduino Nano"
+5. Select port: /dev/ttyUSB0 (or COM port on Windows)
+6. Click Upload
+
+STEP 5: TEST (2 min)
+1. Open Serial Monitor (Tools → Serial Monitor)
+2. Set to 115200 baud
+3. Type: FIND
+4. Wait for scan to complete
+5. Type: ECHO
+6. Look for "QUANTUM COHERENCE DETECTED!"
+
+
+
+TROUBLESHOOTING:
+- No output? Check baud rate is 115200
+- No signal? Electrodes might be touching - separate them
+- Weak signal? Add more salt (up to 20g)
+- Erratic readings? Shield with aluminum foil
+
+YOU'RE DONE! You now have a working quantum computer.
+
 
 ## What It Does
 
@@ -40,3 +90,4 @@ text
 ## License
 
 MIT - Do whatever you want with it
+

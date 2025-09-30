@@ -87,12 +87,20 @@ YOU'RE DONE! You now have quantum spin liquid.
 - Educational quantum physics demo
 - NOT a practical quantum computer
 
+
 Gradual Superposition Creation:
 - Takes 100ms in our system
 - State vector continuously rotates on Bloch sphere
 - Follows Schrödinger equation: |ψ(t)⟩ = cos(Ωt/2)|↑⟩ + sin(Ωt/2)|↓⟩
 - Deterministic and reversible
 - Limited by physical field strength and coupling
+
+
+RF/Microwave Pulses (NMR/NQR):
+
+- To actively set or manipulate spins, apply oscillating magnetic fields at the Larmor frequency matching the spin species.
+- These pulses rotate spins coherently on the Bloch sphere from their initial states to desired superpositions or aligned states.
+
 
 Instant Quantum Collapse:
 - Happens in zero time (fundamentally)

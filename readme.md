@@ -1,4 +1,4 @@
-ASSEMBLY GUIDE - 30 MINUTES
+ASSEMBLY GUIDE - Carbon Salt Quantum Computer - 30 MINUTES
 
 
 ## What You Need ($35)

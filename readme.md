@@ -1,7 +1,7 @@
 Carbon-Salt Spin Liquid Computer - ASSEMBLY GUIDE - 30 MINUTES
 
 
-## What You Need ($35)
+## What You Need ($35+)
 
 - Sodium Iridate
 - Arduino Nano: $3

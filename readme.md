@@ -18,13 +18,6 @@ Control nuclear spins in salt water with Arduino + carbon electrodes.
 1. **Make solution**: 10g salt + 5ml glycerin + 50ml water in jar
 2. **Add electrodes**: Stick 3 pencil leads in jar (don't touch each other)
 3. **Wire it up**:
-Arduino D3 → L298N IN1 → Electrode 1
-Arduino D5 → L298N IN2 → Electrode 1
-Arduino D6 → L298N IN3 → Electrode 2
-Arduino D9 → L298N IN4 → Electrode 2
-Arduino A0 → Voltage sense wire in solution
-
-text
 4. **Upload code**: Open quantum_computer.ino in Arduino IDE, upload
 5. **Run**: Open serial monitor (115200), type commands
 

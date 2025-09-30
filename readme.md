@@ -87,6 +87,21 @@ YOU'RE DONE! You now have a working quantum computer.
 - Educational quantum physics demo
 - NOT a practical quantum computer
 
+Gradual Superposition Creation:
+- Takes 100ms in our system
+- State vector continuously rotates on Bloch sphere
+- Follows Schrödinger equation: |ψ(t)⟩ = cos(Ωt/2)|↑⟩ + sin(Ωt/2)|↓⟩
+- Deterministic and reversible
+- Limited by physical field strength and coupling
+
+Instant Quantum Collapse:
+- Happens in zero time (fundamentally)
+- Discontinuous jump from superposition to eigenstate
+- Probabilistic outcome governed by Born rule: P = |⟨eigenstate|ψ⟩|²
+- Irreversible and non-deterministic
+- Not limited by classical physics constraints
+
+
 ## License
 
 MIT - Do whatever you want with it

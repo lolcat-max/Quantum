@@ -3,8 +3,7 @@ Carbon-Salt Spin Liquid Computer - ASSEMBLY GUIDE - 30 MINUTES
 
 ## What You Need ($35)
 
-- Salt: $1
-- Glycerin: $3  
+- Sodium Iridate
 - Arduino Nano: $3
 - Pencil leads (carbon): $2
 - L298N motor driver: $3
@@ -14,7 +13,7 @@ Carbon-Salt Spin Liquid Computer - ASSEMBLY GUIDE - 30 MINUTES
 
 ## Build It
 
-1. **Make solution**: 10g salt + 5ml glycerin + 50ml water in jar
+1. **Make solution**: 10g salt + 50ml water in jar
 2. **Add electrodes**: Stick 3 pencil leads in jar (don't touch each other)
 3. **Wire it up**:
 4. **Upload code**: Open quantum_computer.ino in Arduino IDE, upload
@@ -24,8 +23,7 @@ STEP 1: PREPARE QUANTUM SOLUTION (10 min)
 1. Pour 50ml distilled water into jar
 2. Add 10g table salt (2 teaspoons)
 3. Stir until dissolved
-4. Add 5ml glycerin (1 teaspoon)
-5. Stir gently
+4. Stir gently
 
 STEP 2: INSTALL ELECTRODES (5 min)
 1. Take 3 pencil leads (carbon electrodes)

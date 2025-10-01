@@ -1,111 +1,79 @@
-// $35 Carbon-salt Quantum Computer
-// Upload to Arduino Nano, open serial monitor at 115200 baud
+// Arduino Calibration Code for Photonically Sensitive Charge-Emitting Liquid System
 
-#define ELECTRODE_X1 3
-#define ELECTRODE_X2 5
-#define ELECTRODE_Y1 6
-#define ELECTRODE_Y2 9
-#define SENSE_PIN A0
+const int sensorPin = A0;      // Analog input from photodiode amplifier
+const int laserPin = 3;        // PWM output to control laser diode
+const int baselineSamples = 100; // Number of samples for baseline measurement
 
-float resonance_freq = 250000;  // 250 kHz starting point
+float baseline = 0;            // Baseline voltage level (no laser)
+float gain = 1.0;              // Initial gain factor, adjustable during calibration
 
 void setup() {
-    Serial.begin(115200);
-    pinMode(ELECTRODE_X1, OUTPUT);
-    pinMode(ELECTRODE_X2, OUTPUT);
-    pinMode(ELECTRODE_Y1, OUTPUT);
-    pinMode(ELECTRODE_Y2, OUTPUT);
-    pinMode(SENSE_PIN, INPUT);
-    
-    Serial.println("=== QUANTUM COMPUTER READY ===");
-    Serial.println("Commands: FIND, SUPER, ECHO, FLIP, MEASURE");
+  Serial.begin(115200);
+  pinMode(sensorPin, INPUT);
+  pinMode(laserPin, OUTPUT);
+
+  Serial.println("Starting Calibration...");
+  delay(2000);
+
+  // Step 1: Measure baseline with laser off
+  analogWrite(laserPin, 0);   // Laser off
+  baseline = measureBaseline();
+  Serial.print("Baseline voltage (no laser): ");
+  Serial.println(baseline, 4);
+
+  // Step 2: Turn laser on at low power for reference
+  analogWrite(laserPin, 64);  // 25% duty cycle PWM
+  delay(1000);                // Wait stabilization
+
+  float reference = measureSignal();
+  Serial.print("Reference voltage (laser on low power): ");
+  Serial.println(reference, 4);
+
+  // Step 3: Calculate approximate gain needed to normalize signal
+  gain = 1.0 / (reference - baseline);
+  Serial.print("Calculated gain factor: ");
+  Serial.println(gain, 4);
+
+  Serial.println("Calibration Complete. Ready for measurement.");
 }
 
 void loop() {
-    if(Serial.available()) {
-        String cmd = Serial.readStringUntil('\n');
-        cmd.trim();
-        cmd.toUpperCase();
-        
-        if(cmd == "FIND") find_resonance();
-        else if(cmd == "SUPER") create_superposition();
-        else if(cmd == "ECHO") spin_echo();
-        else if(cmd == "FLIP") flip_spins();
-        else if(cmd == "MEASURE") measure_state();
-        else Serial.println("Unknown command");
-    }
+  // Read raw sensor analog voltage
+  float rawVoltage = analogRead(sensorPin) * (5.0 / 1023.0);
+
+  // Apply baseline subtraction and gain adjustment
+  float calibratedVoltage = (rawVoltage - baseline) * gain;
+
+  // Output calibrated reading
+  Serial.print("Calibrated signal: ");
+  Serial.println(calibratedVoltage, 4);
+
+  delay(100); // Sample every 100 ms
 }
 
-void apply_pulse(float freq, int duration_ms) {
-    unsigned long start = micros();
-    unsigned long duration_us = duration_ms * 1000;
-    int half_period = 500000 / freq;  // microseconds
-    
-    while(micros() - start < duration_us) {
-        digitalWrite(ELECTRODE_X1, HIGH);
-        digitalWrite(ELECTRODE_X2, LOW);
-        delayMicroseconds(half_period);
-        digitalWrite(ELECTRODE_X1, LOW);
-        digitalWrite(ELECTRODE_X2, HIGH);
-        delayMicroseconds(half_period);
-    }
-    
-    digitalWrite(ELECTRODE_X1, LOW);
-    digitalWrite(ELECTRODE_X2, LOW);
+float measureBaseline() {
+  float sum = 0;
+  for (int i = 0; i < baselineSamples; i++) {
+    int reading = analogRead(sensorPin);
+    float voltage = reading * (5.0 / 1023.0);
+    sum += voltage;
+    delay(20);
+  }
+  return sum / baselineSamples;
 }
 
-float measure_signal() {
-    float sum = 0;
-    for(int i = 0; i < 100; i++) {
-        sum += analogRead(SENSE_PIN);
-        delayMicroseconds(10);
-    }
-    return abs(sum/100 - 512) / 512.0;
+float measureSignal() {
+  float sum = 0;
+  const int samples = 50;
+  for (int i = 0; i < samples; i++) {
+    int reading = analogRead(sensorPin);
+    float voltage = reading * (5.0 / 1023.0);
+    sum += voltage;
+    delay(20);
+  }
+  return sum / samples;
 }
-
-void find_resonance() {
-    Serial.println("Finding resonance...");
-    float best_freq = 0;
-    float max_signal = 0;
-    
-    for(float f = 100000; f <= 500000; f += 10000) {
-        apply_pulse(f, 50);
-        delay(10);
-        float signal = measure_signal();
-        
-        Serial.print(f/1000);
-        Serial.print(" kHz: ");
-        Serial.println(signal);
-        
-        if(signal > max_signal) {
-            max_signal = signal;
-            best_freq = f;
-        }
-        delay(100);
-    }
-    
-    resonance_freq = best_freq;
-    Serial.print("Resonance: ");
-    Serial.print(best_freq/1000);
-    Serial.println(" kHz");
-}
-
-void create_superposition() {
-    Serial.println("Creating quantum superposition (|↑⟩ + |↓⟩)/√2");
-    apply_pulse(resonance_freq, 100);  // π/2 pulse
-    Serial.println("Done!");
-}
-
-void flip_spins() {
-    Serial.println("Flipping spins |↑⟩ ↔ |↓⟩");
-    apply_pulse(resonance_freq, 200);  // π pulse
-    Serial.println("Done!");
-}
-
-void spin_echo() {
-    Serial.println("Spin echo sequence (proves quantum coherence):");
-    
-    apply_pulse(resonance_freq, 100);  // π/2 pulse
+apply_pulse(resonance_freq, 100);  // π/2 pulse
     Serial.println("  π/2 pulse applied");
     
     delay(50);  // Free evolution

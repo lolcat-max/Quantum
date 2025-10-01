@@ -1,4 +1,4 @@
-# Photonically Sensitive Charge-Emitting Liquid Quantum Demo
+# Photonically Sensitive Charge-Emitting Quantum Liquid
 
 This project demonstrates dynamic quantum coherence and charge emission in a turbulent Y2O3/TiO2 H2O system-based photonic system inside an optical cavity. The system converts photon gas coherence fluctuations into measurable electrical signals via transimpedance amplifiers, controlled and read out through an Arduino microcontroller.
 

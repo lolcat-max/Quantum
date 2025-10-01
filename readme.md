@@ -139,11 +139,12 @@ If desired, detailed circuit diagrams, Arduino code, or material sourcing recomm
 | Photodiode + TIA| Photonic-to-electric signal    | Converts photon flux to electrical signal |
 | Arduino Nano    | Control & data acquisition     | Controls laser, analyzes signals      |
 
-
 ***
 
-Concept                 |  Description                                                       
-------------------------+--------------------------------------------------------------------
+Coherence duration       |  Indefinite in isolated, ideal systems                          
+Continuity               |  Always continuous in pure quantum evolution                    
+Discreteness             |  Only manifests due to external interaction (measuring/coupling)
+Quantum state evolution  |  Uninterrupted unitary evolution under Schrödinger's equation   
 Heat delta              |  Change in heat energy in a system                                 
 Quantum coherence       |  Phase relations in superposed quantum states                      
 Anticipation mechanism  |  Coherence dynamics reflecting upcoming thermalization or heat flow

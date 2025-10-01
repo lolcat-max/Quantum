@@ -31,7 +31,7 @@ This project demonstrates dynamic quantum coherence and charge emission in a Roo
 
 ## Assembly Overview
 
-1. Place two RTIL vats within the cavity.  
+1. Place two RTIL vats within the optical cavity.  
 2. Mount the laser diode to direct light into each cavity; place photodiode for light collection.  
 3. Build and wire transimpedance amplifier converting photocurrent to voltage.  
 4. Connect amplifier output to Arduino analog input (A0) and laser control to PWM pin (D3).  

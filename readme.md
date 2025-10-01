@@ -1,6 +1,6 @@
 # Photonically Sensitive Charge-Emitting Liquid Quantum Demo
 
-This project demonstrates dynamic quantum coherence and charge emission in a Room-Temperature Ionic Liquid (RTIL)-based photonic system inside an optical cavity. The system converts photon gas coherence fluctuations into measurable electrical signals via a photodiode and transimpedance amplifier, controlled and read out through an Arduino microcontroller.
+This project demonstrates dynamic quantum coherence and charge emission in a Room-Temperature Ionic Liquid (RTIL)-based photonic system inside an optical cavity. The system converts photon gas coherence fluctuations into measurable electrical signals via a photodiode and transimpedance amplifiers, controlled and read out through an Arduino microcontroller.
 
 ***
 
@@ -8,7 +8,7 @@ This project demonstrates dynamic quantum coherence and charge emission in a Roo
 
 - Uses RTIL as a photonically sensitive liquid generating charge carriers on optical excitation.  
 - Employs an optical cavity with diffuser to sustain photon gas modes and enhance coherence.  
-- Converts photonic coherence into electrical signals using a photodiode + transimpedance amplifier.  
+- Converts photonic coherence into electrical signals using a photodiode + transimpedance amplifiers.  
 - Arduino-based control of laser modulation and real-time calibration with continuous data acquisition.  
 - Tunable coherence dynamics by adjusting laser power, temperature, and environmental factors.  
 - Educational and research platform for quantum coherence and photonic liquid state phenomena.
@@ -34,7 +34,7 @@ This project demonstrates dynamic quantum coherence and charge emission in a Roo
 1. Place two RTIL vats within the optical cavity.  
 2. Mount the laser diode to direct light into each cavity; place photodiode for light collection.  
 3. Build and wire transimpedance amplifier converting photocurrent to voltage.  
-4. Connect amplifier output to Arduino analog input (A0) and laser control to PWM pin (D3).  
+4. Connect two amplifier outputs to Arduino analog inputs (A0, A1) and laser control to PWM pin (D3).  
 5. Upload provided Arduino code for calibration and continuous measurement.  
 6. Modulate laser intensity and monitor calibrated charge output reflecting coherence.
 
@@ -52,7 +52,7 @@ This project demonstrates dynamic quantum coherence and charge emission in a Roo
 ## Using Temperature for Coherence Control
 
 - Use cooling/heating elements to adjust coherence time and ionic mobility in RTIL.  
-- Monitor how charge signals vary with temperature to study decoherence and thermal effects.
+- Monitor how charge signals vary with temperature to study anticipation of decoherence from thermal effects.
 
 ***
 

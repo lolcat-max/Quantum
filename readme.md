@@ -21,7 +21,7 @@ This project demonstrates dynamic quantum coherence and charge emission in a tur
 |---------------------------------|----------|----------------|-----------------------------|
 | Y2O3/TiO2 H2O                   | 2 Vials   | $130+           | Photoconductive medium       |
 | Optical Cavity Components (mirrors, diffuser) | Set      | $10            | For optical mode control     |
-| Peltier Heating/Cooling         | 1 Unit      | $50            | For Temperature control     |
+| Peltier Heating/Cooling         | 1 Unit      | $50            | For temperature control     |
 | Low-power Laser Diode or LED    | 1 Unit      | $10            | Photon source                |
 | Operational Amplifier           | 1 Unit      | $5             | Builds transimpedance amplifier |
 | Arduino Nano or Compatible      | 1 Unit      | $3             | Microcontroller              |
@@ -31,7 +31,7 @@ This project demonstrates dynamic quantum coherence and charge emission in a tur
 
 ## Assembly Overview
 
-1. Place two RTIL vats within the optical cavity.  
+1. Place two Y2O3/TiO2 H2O vats within the optical cavity.  
 2. Mount the UV laser diode to direct light into each cavity; place photodiode for light collection.  
 3. Build and wire transimpedance amplifier converting photocurrent to voltage.  
 4. Connect two amplifier outputs to Arduino analog inputs (A0, A1) and laser control to PWM pin (D3).  

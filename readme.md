@@ -141,6 +141,7 @@ If desired, detailed circuit diagrams, Arduino code, or material sourcing recomm
 
 ***
 
+## Summary Table
 
 Aspect                   |  Perspective                                           
 -------------------------+-----------------------------------------------------------------

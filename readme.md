@@ -142,7 +142,9 @@ If desired, detailed circuit diagrams, Arduino code, or material sourcing recomm
 ***
 
 Coherence duration       |  Indefinite in isolated, ideal systems                          
+
 Continuity               |  Always continuous in pure quantum evolution                    
+
 Discreteness             |  Only manifests due to external interaction (measuring/coupling)
 
 Quantum state evolution  |  Uninterrupted unitary evolution under Schrödinger's equation   

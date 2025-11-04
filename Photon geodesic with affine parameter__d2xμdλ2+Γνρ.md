@@ -1,10 +1,6 @@
 
 # Photon geodesic with affine parameter:
 
-d2xμdλ2+Γνρμdxνdλdxρdλ=0.dλ2d2xμ+Γνρμdλdxνdλdxρ=0.
-
-Explain this equation
-
 The equation says that a photon’s path in curved spacetime is a geodesic (a “straightest-possible” path) traced using an affine parameter λ, because proper time is not available for light.[^4][^8]
 
 ### Symbols and meaning

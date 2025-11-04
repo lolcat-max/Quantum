@@ -1,12 +1,9 @@
-<img src="https://r2cdn.perplexity.ai/pplx-full-logo-primary-dark%402x.png" style="height:64px;margin-right:32px"/>
 
-# Interleaving high‑Z plates with scintillator or silicon pads for charge producing device from gamma rays from
+# Interleaving high‑Z plates with scintillator or silicon pads for charge producing device from gamma rays
 
 If an atom “accepts” a positron but not an electron, the distinctive energy it releases is annihilation radiation: typically two back-to-back gamma rays at 511 keV each from electron–positron annihilation, or a 3‑gamma decay if positronium forms in the triplet state.
 [](https://x.com/GeorgeW479744)
 An electron linac sends ~5–100 MeV electrons into a tungsten converter; bremsstrahlung photons inside the target convert to e+e− pairs, and a dipole magnet separates and transports the positron beam for moderation and use.
-
-make a paper
 
 Interleaving high‑Z plates with scintillator or silicon pads yields an efficient, charge‑producing detector for gamma rays across 511 keV to multi‑GeV: the high‑Z absorber converts photons via Compton/pair production, and the active layers collect charge or light from the ensuing electromagnetic shower for precise timing, imaging, and energy measurement.[^1][^2]
 

@@ -90,7 +90,7 @@ void loop() {
     miningEnabled = true;
   } else {
     miningEnabled = false;
-    nonce += 100;
+    nonce += 10;
   }
 
   if (miningEnabled) {
@@ -141,16 +141,16 @@ void mineSHA256() {
       
       for (int k = 0; k < 3; k++) {
         analogWrite(analogOutPin, 255);
-        delay(100);
+        delay(10);
         analogWrite(analogOutPin, 0);
-        delay(100);
+        delay(10);
       }
       
-      nonce += 100;
+      nonce += 10;
       return;
     }
     
     delay(2);
   }
-  nonce += 100;
+  nonce += 10;
 }

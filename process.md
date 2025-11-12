@@ -1,0 +1,1 @@
+Black phosphorus & Barium titanate is ideal. Sensitive to and manipulates polarisation respectively, suitable for superposition. Placing mineral oil to reduce the constant, beam formation optimal, time differential achieved. Manipulating bias... Cross referencing truth tables.

@@ -15,7 +15,7 @@ int outputValue = 0;
 String inputString = "";
 bool stringComplete = false;
 
-const int pwmThreshold = 25;
+const int pwmThreshold = 70;
 unsigned long lastPrintTime = 0;
 const unsigned long printInterval = 100;
 
@@ -132,7 +132,7 @@ void mineSHA256() {
 
       return;
     }
-    
+    delay(2);
     nonce+=100;
   }
 }

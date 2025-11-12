@@ -70,6 +70,7 @@ void loop() {
     miningEnabled = true;
   } else {
     miningEnabled = false;
+    nonce += 1;
   }
 
   if (miningEnabled) {

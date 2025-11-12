@@ -129,8 +129,7 @@ void mineSHA256() {
         analogWrite(analogOutPin, 0);
         delay(1);
       }
-      
-      nonce = 0;
+
       return;
     }
     

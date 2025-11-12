@@ -4,49 +4,65 @@
   Reads an analog input pin, maps the result to a range from 0 to 255 and uses
   the result to set the pulse width modulation (PWM) of an output pin.
   Also prints the results to the Serial Monitor.
-
-  The circuit:
-  - potentiometer connected to analog pin 0.
-    Center pin of the potentiometer goes to the analog pin.
-    side pins of the potentiometer go to +5V and ground
-  - LED connected from digital pin 9 to ground through 220 ohm resistor
-
-  created 29 Dec. 2008
-  modified 9 Apr 2012
-  by Tom Igoe
-
-  This example code is in the public domain.
-
-  https://docs.arduino.cc/built-in-examples/analog/AnalogInOutSerial/
 */
 
-// These constants won't change. They're used to give names to the pins used:
-const int analogInPin = A0;  // Analog input pin that the potentiometer is attached to
-const int analogOutPin = 9;  // Analog output pin that the LED is attached to
+const int analogInPin = A0;    // Analog input pin with potentiometer
+const int analogOutPin = 9;    // PWM output pin for LED
 
-int sensorValue = 0;  // value read from the pot
-int outputValue = 0;  // value output to the PWM (analog out)
+int sensorValue = 0;           // Analog reading
+int outputValue = 0;           // PWM output value (0-255)
+String inputString = "";       // For serial input
+bool stringComplete = false;   // Flag for completed input string
 
 void setup() {
-  // initialize serial communications at 9600 bps:
-  Serial.begin(9600);
+  Serial.begin(9600);          // Initialize serial port
+  inputString.reserve(50);     // Optional reserve buffer size
+  pinMode(analogOutPin, OUTPUT);
 }
 
 void loop() {
-  // read the analog in value:
+  // Read analog input and map to PWM range
   sensorValue = analogRead(analogInPin);
-  // map it to the range of the analog out:
   outputValue = map(sensorValue, 0, 1023, 0, 255);
-  // change the analog out value:
+
+  // Set PWM output accordingly
   analogWrite(analogOutPin, outputValue);
 
-  // print the results to the Serial Monitor:
-  Serial.print("sensor = ");
-  Serial.print(sensorValue);
-  Serial.print("\t output = ");
-  Serial.println(outputValue);
+  // Read serial input if available
+  while (Serial.available()) {
+    char inChar = (char)Serial.read();
+    inputString += inChar;
+    if (inChar == '\n') {
+      stringComplete = true;
+    }
+  }
 
-  // wait 2 milliseconds before the next loop for the analog-to-digital
-  // converter to settle after the last reading:
-  delay(2);
+  // If entire string received, process it
+  if (stringComplete) {
+    // Example action: if the input string is "ON", turn LED fully on
+    inputString.trim();  // Remove whitespace and newlines
+    if (inputString.equalsIgnoreCase("ON")) {
+      analogWrite(analogOutPin, 255);  // Full brightness
+      Serial.println("LED turned ON");
+    } else if (inputString.equalsIgnoreCase("OFF")) {
+      analogWrite(analogOutPin, 0);    // Turn off LED
+      Serial.println("LED turned OFF");
+    } else {
+      Serial.print("Received: ");
+      Serial.println(inputString);
+    }
+    // Reset input string and flag
+    inputString = "";
+    stringComplete = false;
+  }
+  
+  // Print the current analog reading and PWM value every 100ms
+  static unsigned long lastPrint = 0;
+  if (millis() - lastPrint > 100) {
+    Serial.print("Analog: ");
+    Serial.print(sensorValue);
+    Serial.print(" PWM: ");
+    Serial.println(outputValue);
+    lastPrint = millis();
+  }
 }

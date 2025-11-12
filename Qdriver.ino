@@ -70,7 +70,7 @@ void loop() {
     miningEnabled = true;
   } else {
     miningEnabled = false;
-    nonce += 1;
+    nonce += 100;
   }
 
   if (miningEnabled) {
@@ -89,7 +89,7 @@ void loop() {
 
 void mineSHA256() {
   for (int i = 0; i < 100; i++) {
-    String input = String(prefix) + String(nonce);
+    String input = String(prefix) + String(nonce+i);
     
     // Compute SHA-256 hash using Rhys library
     sha256.reset();
@@ -133,6 +133,6 @@ void mineSHA256() {
       return;
     }
     
-    nonce++;
+    nonce+=100;
   }
 }

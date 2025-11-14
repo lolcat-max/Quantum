@@ -1,0 +1,1 @@
+Note to self, it predicts proof of work, yet the time differential must be greater than the work terminator (the promising signal), then it will automatically stop mechanistically and iterate a nonce. So it solves a finite halting problem.

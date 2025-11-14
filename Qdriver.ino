@@ -6,26 +6,15 @@
 #include <Crypto.h>
 #include <SHA256.h>
 
-const int analogInPin = A0;
-const int analogOutPin = 9;
-
 int sensorValue = 0;
 int outputValue = 0;
 
 String inputString = "";
 bool stringComplete = false;
-const int analogThreshold = 280;
-const int pwmThreshold = 70;
+const int analogThreshold = 200; //sensitivity to black phosphorus (requires configuration) 
 unsigned long lastPrintTime = 0;
 const unsigned long printInterval = 100;
-
-// Smoothing variables for analog input
-const int numReadings = 2;
-int readings[numReadings];
-int readIndex = 0;
-int total = 0;
-int average = 0;
-
+int work = 10;
 // Mining variables
 SHA256 sha256;
 unsigned long nonce = 0;
@@ -36,61 +25,22 @@ bool miningEnabled = false;
 void setup() {
   Serial.begin(9600);
   inputString.reserve(50);
-  pinMode(analogOutPin, OUTPUT);
-  
-  // Initialize smoothing array
-  for (int i = 0; i < numReadings; i++) {
-    readings[i] = 0;
-  }
-  
+  pinMode(A0, INPUT);
+
+  pinMode(13, OUTPUT);
+    
+
   Serial.println("Arduino SHA-256 Miner Ready");
 }
 
 void loop() {
-  // Smooth analog input using running average
-  total = total - readings[readIndex];
-  readings[readIndex] = analogRead(analogInPin);
-  total = total + readings[readIndex];
-  readIndex = (readIndex + 1) % numReadings;
-  average = total / numReadings;
-  
-  sensorValue = average;  // Use smoothed value
-  outputValue = map(sensorValue, 0, 1023, 0, 255);
-  analogWrite(analogOutPin, outputValue);
-
-  while (Serial.available()) {
-    char inChar = (char)Serial.read();
-    inputString += inChar;
-    if (inChar == '\n') {
-      stringComplete = true;
-    }
-  }
-
-  if (stringComplete) {
-    inputString.trim();
-    if (inputString.equalsIgnoreCase("ON")) {
-      analogWrite(analogOutPin, 255);
-      Serial.println("LED turned ON");
-    } else if (inputString.equalsIgnoreCase("OFF")) {
-      analogWrite(analogOutPin, 0);
-      Serial.println("LED turned OFF");
-    } else if (inputString.equalsIgnoreCase("START")) {
-      miningEnabled = true;
-      Serial.println("Mining started");
-    } else if (inputString.equalsIgnoreCase("STOP")) {
-      miningEnabled = false;
-      Serial.println("Mining stopped");
-    }
-    inputString = "";
-    stringComplete = false;
-  }
-
+  float sensorValue = analogRead(A0);
   // Your original threshold logic with stable PWM values
   if (sensorValue > analogThreshold) {
     miningEnabled = true;
   } else {
     miningEnabled = false;
-    nonce += 10;
+    nonce += work;
   }
 
   if (miningEnabled) {
@@ -100,9 +50,7 @@ void loop() {
   unsigned long currentMillis = millis();
   if (currentMillis - lastPrintTime >= printInterval) {
     Serial.print("Analog: ");
-    Serial.print(sensorValue);
-    Serial.print(" PWM: ");
-    Serial.println(outputValue);
+    Serial.println(sensorValue);
     lastPrintTime = currentMillis;
   }
 }
@@ -132,25 +80,20 @@ void mineSHA256() {
     }
     
     if (found) {
+      digitalWrite(13, HIGH);
+
       Serial.println("\n*** BLOCK FOUND ***");
       Serial.print("Nonce: ");
       Serial.println(nonce + i);
       Serial.print("Hash: ");
       Serial.println(hashStr);
       Serial.println("*******************\n");
-      
-      for (int k = 0; k < 3; k++) {
-        analogWrite(analogOutPin, 255);
-        delay(10);
-        analogWrite(analogOutPin, 0);
-        delay(10);
-      }
-      
-      nonce += 10;
+      nonce += work;
       return;
     }
     
-    delay(2);
+    delay(2);//duration of barium titanate activation
+    digitalWrite(13, LOW);
   }
-  nonce += 10;
+  nonce += work;
 }

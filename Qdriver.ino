@@ -34,66 +34,51 @@ void setup() {
 }
 
 void loop() {
-  float sensorValue = analogRead(A0);
-  // Your original threshold logic with stable PWM values
-  if (sensorValue > analogThreshold) {
-    miningEnabled = true;
-  } else {
-    miningEnabled = false;
-    nonce += work;
-  }
-
-  if (miningEnabled) {
-    mineSHA256();
-  }
-
-  unsigned long currentMillis = millis();
-  if (currentMillis - lastPrintTime >= printInterval) {
-    Serial.print("Analog: ");
-    Serial.println(sensorValue);
-    lastPrintTime = currentMillis;
-  }
+  mineSHA256();
 }
 
 void mineSHA256() {
-  for (int i = 0; i < 100; i++) {
-    String input = String(prefix) + String(nonce + i);
-    
-    sha256.reset();
-    sha256.update(input.c_str(), input.length());
-    
-    uint8_t hash[32];
-    sha256.finalize(hash, 32);
-    
-    String hashStr = "";
-    for (int j = 0; j < 32; j++) {
-      if (hash[j] < 16) hashStr += "0";
-      hashStr += String(hash[j], HEX);
-    }
-    
-    bool found = true;
-    for (int j = 0; j < difficulty; j++) {
-      if (hashStr.charAt(j) != '0') {
-        found = false;
-        break;
+  float sensorValue = analogRead(A0);
+  if (sensorValue > analogThreshold) {//sensitivity to black phosphorus (requires configuration) 
+    for (int i = 0; i < work; i++) {
+      String input = String(prefix) + String(nonce + i);
+      
+      sha256.reset();
+      sha256.update(input.c_str(), input.length());
+      
+      uint8_t hash[32];
+      sha256.finalize(hash, 32);
+      
+      String hashStr = "";
+      for (int j = 0; j < 32; j++) {
+        if (hash[j] < 16) hashStr += "0";
+        hashStr += String(hash[j], HEX);
       }
-    }
-    
-    if (found) {
-      digitalWrite(13, HIGH);
+      
+      bool found = true;
+      for (int j = 0; j < difficulty; j++) {
+        if (hashStr.charAt(j) != '0') {
+          found = false;
+          break;
+        }
+      }
+      
+      if (found) {
+        digitalWrite(13, HIGH);
 
-      Serial.println("\n*** BLOCK FOUND ***");
-      Serial.print("Nonce: ");
-      Serial.println(nonce + i);
-      Serial.print("Hash: ");
-      Serial.println(hashStr);
-      Serial.println("*******************\n");
-      nonce += work;
-      return;
+        Serial.println("\n*** BLOCK FOUND ***");
+        Serial.print("Nonce: ");
+        Serial.println(nonce + i);
+        Serial.print("Hash: ");
+        Serial.println(hashStr);
+        Serial.println("*******************\n");
+        nonce += work;
+        return;
+      }
+      
+      delay(2);//duration of barium titanate activation
+      digitalWrite(13, LOW);
     }
-    
-    delay(2);//duration of barium titanate activation
-    digitalWrite(13, LOW);
   }
   nonce += work;
 }

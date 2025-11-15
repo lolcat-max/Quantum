@@ -1,1 +1,2 @@
 Note to self, it predicts proof of work, yet the time differential must be greater than the work terminator (the promising signal), then it will automatically stop mechanistically and iterate a nonce. So it solves a finite halting problem.
+Either causation will save the interrupt or the multiverse will... Alas macro scale paradoxes don't exist and the photon has to flip first, hashing will stop and continue counting until a promising signal. Only predicts a block(promising signal) only while it's hashing rather..

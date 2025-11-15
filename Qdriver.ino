@@ -39,8 +39,12 @@ void loop() {
 
 void mineSHA256() {
   float sensorValue = analogRead(A0);
-  if (sensorValue > analogThreshold) {//sensitivity to black phosphorus (requires configuration) 
+  randomSeed(analogRead(A1));
     for (int i = 0; i < work; i++) {
+
+      if (sensorValue > analogThreshold ) {//sensitivity to black phosphorus (requires configuration) 
+      break;//early stopping
+      }
       String input = String(prefix) + String(nonce + i);
       
       sha256.reset();
@@ -73,12 +77,12 @@ void mineSHA256() {
         Serial.println(hashStr);
         Serial.println("*******************\n");
         nonce += work;
+        delay(2);//duration of barium titanate activation
+        digitalWrite(13, LOW);
         return;
       }
       
-      delay(2);//duration of barium titanate activation
-      digitalWrite(13, LOW);
+     
     }
-  }
   nonce += work;
 }

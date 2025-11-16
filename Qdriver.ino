@@ -18,7 +18,6 @@ unsigned long nonce = 0;
 
 void setup() {
   Serial.begin(9600);
-  inputString.reserve(50);
   pinMode(A0, INPUT);
   pinMode(13, OUTPUT);
   Serial.println("Arduino SHA-256 Miner Ready");

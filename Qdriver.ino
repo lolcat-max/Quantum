@@ -34,7 +34,7 @@ void loop() {
 
   // Calculate and print the elapsed time
   unsigned long elapsedTime = endTime - startTime;
-  Serial.print("mineSHA256() execution time: ");
+  Serial.print("processing() execution time: ");
   Serial.print(elapsedTime);
   Serial.println(" microseconds");
 

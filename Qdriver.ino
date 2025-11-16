@@ -10,15 +10,11 @@
 int sensorValue = 0;
 int outputValue = 0;
 
-String inputString = "";
 const int analogThreshold = 800; //sensitivity to black phosphorus (requires configuration) 
 int work = 20000;
 
-// Mining variables
-SHA256 sha256;
 unsigned long nonce = 0;
-const char* prefix = "test";
-const int difficulty = 1;
+
 
 void setup() {
   Serial.begin(9600);
@@ -67,3 +63,4 @@ void processing() {
   }
   nonce += work;
 }
+

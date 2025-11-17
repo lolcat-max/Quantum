@@ -1,0 +1,1 @@
+Any quantum computer processes in polynomical time, where the input is the qubit coherence according to the horizon barrier where it's inverse defined by Plank times is the exchange volume of time spent between point A and point B.

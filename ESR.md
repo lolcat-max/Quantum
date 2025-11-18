@@ -1,1 +1,1 @@
-QPU: So essentially, the Hamiltonian from specific activated areas of the structure changes according to code where it is measured with ESR.
+2D Molybdenum Disulfide (MoS2) sheets, QPU: So essentially, the Hamiltonian from specific activated areas of the structure changes according to code where it is measured with ESR. These 2D sheets are made with liquid-phase exfoliation of the powder.

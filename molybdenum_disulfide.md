@@ -1,0 +1,1 @@
+Molybdenum Disulfide liquid-phase exfoliation for 2D nanosheets for 30 milliseconds spin relaxation time, It is possible to enginner a qubit with spin-orbit torque and Electron Spin Resonance (ESR) at the same time at different lengths.

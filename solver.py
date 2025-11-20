@@ -13,8 +13,8 @@ warnings.filterwarnings("ignore")
 class AstroDomain:
     def __init__(self, name, initial_scale=10.0):
         self.name = name
-        # Initialize safely
-        self.val = np.random.uniform(initial_scale / 10, initial_scale * 10) 
+        # Initialize to scale for better convergence on balanced factors
+        self.val = initial_scale
         self.velocity = 0.0
         
     def update_multiplicative(self, factor, dt):
@@ -49,19 +49,67 @@ class AstroPhysicsSolver:
         
     def create_var(self, name, rough_magnitude):
         self.variables[name] = AstroDomain(name, initial_scale=rough_magnitude)
+    
+    def _find_integer_factors(self, target_int, approx_x, approx_y, search_radius=20):
+        """
+        For integer targets and simple x * y = N equations, find exact integer factors
+        close to the approximate floating-point solutions, prioritizing balance.
+        Assumes two variables x and y, with x <= y.
+        """
+        if target_int <= 0:
+            return None
         
-    def solve(self, equation, steps=100000):
+        # Ensure approx_x <= approx_y for consistency
+        if approx_x > approx_y:
+            approx_x, approx_y = approx_y, approx_x
+        
+        best_pair = None
+        min_diff = float('inf')
+        
+        # Local search near approximations for balanced factors
+        start = max(1, int(approx_x) - search_radius)
+        end = min(int(approx_x) + search_radius, int(math.sqrt(target_int)) + 1)
+        
+        for cand_x in range(start, end + 1):
+            if target_int % cand_x == 0:
+                cand_y = target_int // cand_x
+                if cand_x > cand_y:
+                    continue  # Ensure cand_x <= cand_y
+                # Check closeness to approximates (prioritizes balance near sqrt)
+                diff = abs(cand_x - approx_x) + abs(cand_y - approx_y)
+                if diff < min_diff:
+                    min_diff = diff
+                    best_pair = (cand_x, cand_y)
+        
+        # Fallback: Find the most balanced factors overall (neither too low)
+        # Prioritize pairs where x and y are closest (minimal ratio or difference)
+        if best_pair is None:
+            min_ratio = float('inf')
+            for i in range(1, int(math.sqrt(target_int)) + 1):
+                if target_int % i == 0:
+                    j = target_int // i
+                    if i <= j:
+                        ratio = j / i if i > 0 else float('inf')
+                        if ratio < min_ratio:
+                            min_ratio = ratio
+                            best_pair = (i, j)
+        
+        return best_pair
+    
+    def solve(self, equation, steps=100000, prefer_integers=False):
         print(f"\n[Physics Engine] Target Equation: {equation}")
         
         lhs_str, rhs_str = equation.split('=')
         
         # 1. Parse Target Safely
         try:
-            # Use string replacement for scientific notation "1e300"
             target_val = float(eval(rhs_str))
-        except OverflowError:
+            # Check if integer
+            target_int = int(target_val) if target_val.is_integer() else None
+        except (OverflowError, ValueError):
             target_val = float('inf')
-            print("Warning: Target is infinite.")
+            target_int = None
+            print("Warning: Target is infinite or invalid.")
         
         if target_val == float('inf'):
             print("[System] Target too large for 64-bit float. Stopping.")
@@ -74,6 +122,9 @@ class AstroPhysicsSolver:
             log_target = -100
             
         print(f"[System] Target Magnitude: 10^{log_target:.2f}")
+        
+        if target_int is not None:
+            print(f"[System] Target is integer: {target_int}")
             
         # 2. Initialize Variables
         import re
@@ -151,7 +202,27 @@ class AstroPhysicsSolver:
                 
                 domain.update_multiplicative(force, dt=0.01)
         
-        return {n: d.val for n, d in self.variables.items()}
+        # Get floating-point results
+        float_res = {n: d.val for n, d in self.variables.items()}
+        
+        # If preferring integers and simple x * y = N
+        if prefer_integers and target_int and len(tokens) == 2:
+            # Assume tokens are x and y
+            if 'x' in tokens and 'y' in tokens:
+                approx_x = float_res['x']
+                approx_y = float_res['y']
+                int_pair = self._find_integer_factors(target_int, approx_x, approx_y)
+                if int_pair:
+                    # Assign based on approximations for consistency (x closer to approx_x)
+                    if abs(int_pair[0] - approx_x) < abs(int_pair[1] - approx_x):
+                        float_res['x'] = int_pair[0]
+                        float_res['y'] = int_pair[1]
+                    else:
+                        float_res['x'] = int_pair[1]
+                        float_res['y'] = int_pair[0]
+                    print(f"[Integer Mode] Found balanced factors: {int_pair[0]} * {int_pair[1]} = {target_int} (neither low, ratio ~{max(int_pair)/min(int_pair):.2f})")
+        
+        return float_res
 
 # ==========================================
 # 3. ASTRONOMICAL DEMONSTRATION
@@ -160,11 +231,9 @@ class AstroPhysicsSolver:
 if __name__ == "__main__":
     solver = AstroPhysicsSolver()
 
-    # TEST 2: Multi-variable factorization of huge number
-    # x * y = 1e200
-    solver = AstroPhysicsSolver()
-    res2 = solver.solve("x * y = 1e200")
-    if 'x' in res2:
-        print(f"\nResult x: {res2['x']:.4e}")
-        print(f"Result y: {res2['y']:.4e}")
-        print(f"Product:  {res2['x'] * res2['y']:.4e}")
+    # TEST: Multi-variable factorization, preferring integers
+    res = solver.solve("x * y = 6666666666666666", prefer_integers=True)
+    if 'x' in res and 'y' in res:
+        print(f"\nResult x: {res['x']}")
+        print(f"Result y: {res['y']}")
+        print(f"Product:  {res['x'] * res['y']}")

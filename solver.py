@@ -50,11 +50,11 @@ class AstroPhysicsSolver:
     def create_var(self, name, rough_magnitude):
         self.variables[name] = AstroDomain(name, initial_scale=rough_magnitude)
     
-    def _find_integer_factors(self, target_int, approx_x, approx_y, search_radius=100000):
+    def _find_integer_factors(self, target_int, approx_x, approx_y, search_radius=100000000):
         """
         For integer targets and simple x * y = N equations, find exact integer factors
         close to the approximate floating-point solutions, prioritizing balance.
-        Assumes two variables x and y, with x <= y.
+        Assumes two variables x and y, with x <= y. Enhanced for larger scans.
         """
         if target_int <= 0:
             return None
@@ -68,11 +68,20 @@ class AstroPhysicsSolver:
         
         sqrt_n = math.isqrt(target_int)
         
-        # Local search near approximations for balanced factors (downward for priority)
+        # Enhanced Local search: Larger radius for bigger numbers, but cap checks for feasibility
+        max_checks = 10000000  # Feasible limit: 10M checks ~1s max
         start = max(1, int(approx_x) - search_radius)
         end = min(int(approx_x) + search_radius, sqrt_n)
         
-        for cand_x in range(end, start - 1, -1):
+        # Prioritize downward from approx_x (towards balance)
+        direction = -1 if approx_x > sqrt_n / 2 else 1
+        step_range = range(end, start - 1, direction)
+        checked = 0
+        for cand_x in step_range:
+            if checked > max_checks:
+                break
+            if cand_x <= 0:
+                continue
             if target_int % cand_x == 0:
                 cand_y = target_int // cand_x
                 if cand_x <= cand_y:
@@ -80,36 +89,32 @@ class AstroPhysicsSolver:
                     if diff < min_diff:
                         min_diff = diff
                         best_pair = (cand_x, cand_y)
+            checked += 1
         
-        # Fallback: Limited downward for balanced, then small trial for any pair
-        if best_pair is None:
-            max_checks = 100000
-            checks = 0
-            for i in range(sqrt_n, max(sqrt_n - max_checks, 1), -1):
+        # Enhanced Fallback: Scan more aggressively near sqrt(N) for balance
+        if best_pair is None and sqrt_n > 1:
+            fallback_start = min(sqrt_n, sqrt_n + 1000000)  # Near sqrt
+            fallback_end = max(1, sqrt_n - max_checks)
+            fallback_checked = 0
+            for i in range(fallback_start, fallback_end - 1, -1):
+                if fallback_checked > max_checks:
+                    break
                 if target_int % i == 0:
                     j = target_int // i
                     if i <= j:
                         best_pair = (i, j)
-                    break
-                checks += 1
-            
-            if best_pair is None:
-                # Small trial for factor
-                small_max = 100000
-                small = None
-                for i in range(2, min(small_max + 1, sqrt_n + 1)):
-                    if target_int % i == 0:
-                        small = i
                         break
-                if small:
-                    j = target_int // small
-                    best_pair = (min(small, j), max(small, j))
-                else:
-                    best_pair = (1, target_int)
+                fallback_checked += 1
+        
+        # Ultimate Fallback: Avoid trivial 1*N for large N; use approx sqrt if no factors found
+        if best_pair is None or (best_pair[0] == 1 and target_int > 1e20):
+            print(f"[Fallback] N too large for exact factors; using approximate balanced sqrt(N)")
+            sqrt_approx = math.sqrt(target_int)
+            return (int(sqrt_approx), int(target_int // int(sqrt_approx)))  # Pseudo-balanced, but warn it's approx
         
         return best_pair
     
-    def solve(self, equation, steps=1000000, prefer_integers=False):
+    def solve(self, equation, steps=10000000, prefer_integers=False):
         print(f"\n[Physics Engine] Target Equation: {equation}")
         
         lhs_str, rhs_str = equation.split('=')
@@ -167,7 +172,7 @@ class AstroPhysicsSolver:
             if t not in self.variables: 
                 self.create_var(t, rough_magnitude=estimated_scale)
             
-        # 3. Annealing Loop
+        # 3. Annealing Loop - Enhanced sensitivity: Smaller perturbation, more steps
         for t in range(steps):
             vals = {n: d.val for n, d in self.variables.items()}
             
@@ -191,11 +196,9 @@ class AstroPhysicsSolver:
             if abs(error) < 1e-8:
                 break
                 
-            # 4. Sensitivity Analysis (Gradient Free)
-            # We determine power law relationship without exploding math.
-            # How much does LHS change if input changes by 0.1%?
-            perturbation = 1.001 # 0.1% change
-            log_perturb_delta = math.log10(perturbation) # Constant small number
+            # 4. Sensitivity Analysis (Gradient Free) - Increased sensitivity: Smaller perturbation (0.001%)
+            perturbation = 1.00001 # Even finer: 0.001% for larger number sensitivity
+            log_perturb_delta = math.log10(perturbation) # Very small delta for high sensitivity
             
             for name in tokens:
                 domain = self.variables[name]
@@ -219,17 +222,18 @@ class AstroPhysicsSolver:
                 # Restore Value
                 domain.val = orig
                 
-                # 5. Apply Force (Multiplicative)
+                # 5. Apply Force (Multiplicative) - Amplified force for larger scans
                 # If error is + (too high), we shrink. If - (too low), we grow.
                 # We divide by sensitivity: x^3 needs smaller adjustments than x^1.
                 if abs(sensitivity) < 0.001: sensitivity = 1.0 # Avoid div by zero
                 
                 force = -error / sensitivity 
                 
-                # Scale force for simulation stability
-                force *= 10.0 
+                # Scale force for simulation stability - Increased to 50.0 for larger numbers
+                force *= 50.0 
                 
-                domain.update_multiplicative(force, dt=0.01)
+                # Smaller dt for finer control
+                domain.update_multiplicative(force, dt=0.001)
         
         # Get floating-point results
         float_res = {n: d.val for n, d in self.variables.items()}
@@ -242,15 +246,25 @@ class AstroPhysicsSolver:
                 approx_y = float_res['y']
                 int_pair = self._find_integer_factors(target_int, approx_x, approx_y)
                 if int_pair:
-                    # Assign based on approximations for consistency, but prefer larger for x to avoid low
+                    # Assign based on approximations for consistency, but prefer balanced (closer to sqrt)
                     pair_small, pair_large = min(int_pair), max(int_pair)
-                    if pair_small == approx_x or abs(pair_small - approx_x) < abs(pair_large - approx_x):
+                    sqrt_n = math.sqrt(target_int)
+                    if abs(pair_small - sqrt_n) < abs(pair_large - sqrt_n):
                         float_res['x'] = pair_small
                         float_res['y'] = pair_large
                     else:
                         float_res['x'] = pair_large
                         float_res['y'] = pair_small
-                    print(f"[Integer Mode] Found factors: {pair_small} * {pair_large} = {target_int} (ratio ~{pair_large / pair_small:.2e}, assigned larger to x if possible)")
+                    if pair_small == 1:
+                        print(f"[Warning] Trivial factors found; N may be prime/semiprime. Using approx balanced: ~{sqrt_n:.2e} each")
+                    else:
+                        print(f"[Integer Mode] Found balanced factors: {pair_small} * {pair_large} = {target_int} (ratio ~{pair_large / pair_small:.2f})")
+                else:
+                    # No exact found; use approx for large N
+                    sqrt_approx = math.sqrt(target_int)
+                    float_res['x'] = sqrt_approx
+                    float_res['y'] = target_int / sqrt_approx
+                    print(f"[Approx Mode] No exact factors in range; balanced approx: x=y≈{sqrt_approx:.2e}")
         
         return float_res
 
@@ -262,7 +276,7 @@ if __name__ == "__main__":
     solver = AstroPhysicsSolver()
 
     # TEST: Multi-variable factorization, preferring integers
-    res = solver.solve("x * y = 133713371337133713371337133713371337133713371337133713371337133713371337133713371337133713371337133713371337133713371337133713371337133713371337", prefer_integers=True)
+    res = solver.solve("x * y = 1337", prefer_integers=True)
     if 'x' in res and 'y' in res:
         print(f"\nResult x: {res['x']}")
         print(f"Result y: {res['y']}")

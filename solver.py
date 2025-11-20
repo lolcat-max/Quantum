@@ -50,7 +50,7 @@ class AstroPhysicsSolver:
     def create_var(self, name, rough_magnitude):
         self.variables[name] = AstroDomain(name, initial_scale=rough_magnitude)
     
-    def _find_integer_factors(self, target_int, approx_x, approx_y, search_radius=20):
+    def _find_integer_factors(self, target_int, approx_x, approx_y, search_radius=100000):
         """
         For integer targets and simple x * y = N equations, find exact integer factors
         close to the approximate floating-point solutions, prioritizing balance.
@@ -66,53 +66,80 @@ class AstroPhysicsSolver:
         best_pair = None
         min_diff = float('inf')
         
-        # Local search near approximations for balanced factors
-        start = max(1, int(approx_x) - search_radius)
-        end = min(int(approx_x) + search_radius, int(math.sqrt(target_int)) + 1)
+        sqrt_n = math.isqrt(target_int)
         
-        for cand_x in range(start, end + 1):
+        # Local search near approximations for balanced factors (downward for priority)
+        start = max(1, int(approx_x) - search_radius)
+        end = min(int(approx_x) + search_radius, sqrt_n)
+        
+        for cand_x in range(end, start - 1, -1):
             if target_int % cand_x == 0:
                 cand_y = target_int // cand_x
-                if cand_x > cand_y:
-                    continue  # Ensure cand_x <= cand_y
-                # Check closeness to approximates (prioritizes balance near sqrt)
-                diff = abs(cand_x - approx_x) + abs(cand_y - approx_y)
-                if diff < min_diff:
-                    min_diff = diff
-                    best_pair = (cand_x, cand_y)
+                if cand_x <= cand_y:
+                    diff = abs(cand_x - approx_x) + abs(cand_y - approx_y)
+                    if diff < min_diff:
+                        min_diff = diff
+                        best_pair = (cand_x, cand_y)
         
-        # Fallback: Find the most balanced factors overall (neither too low)
-        # Prioritize pairs where x and y are closest (minimal ratio or difference)
+        # Fallback: Limited downward for balanced, then small trial for any pair
         if best_pair is None:
-            min_ratio = float('inf')
-            for i in range(1, int(math.sqrt(target_int)) + 1):
+            max_checks = 100000
+            checks = 0
+            for i in range(sqrt_n, max(sqrt_n - max_checks, 1), -1):
                 if target_int % i == 0:
                     j = target_int // i
                     if i <= j:
-                        ratio = j / i if i > 0 else float('inf')
-                        if ratio < min_ratio:
-                            min_ratio = ratio
-                            best_pair = (i, j)
+                        best_pair = (i, j)
+                    break
+                checks += 1
+            
+            if best_pair is None:
+                # Small trial for factor
+                small_max = 100000
+                small = None
+                for i in range(2, min(small_max + 1, sqrt_n + 1)):
+                    if target_int % i == 0:
+                        small = i
+                        break
+                if small:
+                    j = target_int // small
+                    best_pair = (min(small, j), max(small, j))
+                else:
+                    best_pair = (1, target_int)
         
         return best_pair
     
-    def solve(self, equation, steps=100000, prefer_integers=False):
+    def solve(self, equation, steps=1000000, prefer_integers=False):
         print(f"\n[Physics Engine] Target Equation: {equation}")
         
         lhs_str, rhs_str = equation.split('=')
         
-        # 1. Parse Target Safely
+        # 1. Parse Target Safely - Handle large integers exactly
+        target_int = None
+        target_val = None
         try:
-            target_val = float(eval(rhs_str))
-            # Check if integer
-            target_int = int(target_val) if target_val.is_integer() else None
-        except (OverflowError, ValueError):
-            target_val = float('inf')
-            target_int = None
-            print("Warning: Target is infinite or invalid.")
+            rhs_stripped = rhs_str.strip()
+            if 'e' in rhs_stripped.lower() or '.' in rhs_stripped:
+                # Scientific or float
+                target_val = float(eval(rhs_stripped))
+                if target_val.is_integer():
+                    target_int = int(target_val)
+            else:
+                # Assume integer literal
+                target_int = int(rhs_stripped)
+                target_val = float(target_int)
+        except (ValueError, OverflowError):
+            try:
+                target_val = float(eval(rhs_stripped))
+                if target_val.is_integer():
+                    target_int = int(target_val)
+            except:
+                target_val = float('inf')
+                target_int = None
+            print("Warning: Target parsing issues, using approximate.")
         
-        if target_val == float('inf'):
-            print("[System] Target too large for 64-bit float. Stopping.")
+        if target_val is None or target_val == float('inf'):
+            print("[System] Target too large or invalid. Stopping.")
             return {}
 
         # Work in Log10 Space
@@ -124,7 +151,9 @@ class AstroPhysicsSolver:
         print(f"[System] Target Magnitude: 10^{log_target:.2f}")
         
         if target_int is not None:
-            print(f"[System] Target is integer: {target_int}")
+            print(f"[System] Target is exact integer: {target_int}")
+        else:
+            print(f"[System] Target approximate: {target_val}")
             
         # 2. Initialize Variables
         import re
@@ -206,21 +235,22 @@ class AstroPhysicsSolver:
         float_res = {n: d.val for n, d in self.variables.items()}
         
         # If preferring integers and simple x * y = N
-        if prefer_integers and target_int and len(tokens) == 2:
+        if prefer_integers and target_int is not None and len(tokens) == 2:
             # Assume tokens are x and y
             if 'x' in tokens and 'y' in tokens:
                 approx_x = float_res['x']
                 approx_y = float_res['y']
                 int_pair = self._find_integer_factors(target_int, approx_x, approx_y)
                 if int_pair:
-                    # Assign based on approximations for consistency (x closer to approx_x)
-                    if abs(int_pair[0] - approx_x) < abs(int_pair[1] - approx_x):
-                        float_res['x'] = int_pair[0]
-                        float_res['y'] = int_pair[1]
+                    # Assign based on approximations for consistency, but prefer larger for x to avoid low
+                    pair_small, pair_large = min(int_pair), max(int_pair)
+                    if pair_small == approx_x or abs(pair_small - approx_x) < abs(pair_large - approx_x):
+                        float_res['x'] = pair_small
+                        float_res['y'] = pair_large
                     else:
-                        float_res['x'] = int_pair[1]
-                        float_res['y'] = int_pair[0]
-                    print(f"[Integer Mode] Found balanced factors: {int_pair[0]} * {int_pair[1]} = {target_int} (neither low, ratio ~{max(int_pair)/min(int_pair):.2f})")
+                        float_res['x'] = pair_large
+                        float_res['y'] = pair_small
+                    print(f"[Integer Mode] Found factors: {pair_small} * {pair_large} = {target_int} (ratio ~{pair_large / pair_small:.2e}, assigned larger to x if possible)")
         
         return float_res
 
@@ -232,7 +262,7 @@ if __name__ == "__main__":
     solver = AstroPhysicsSolver()
 
     # TEST: Multi-variable factorization, preferring integers
-    res = solver.solve("x * y = 6666666666666666", prefer_integers=True)
+    res = solver.solve("x * y = 133713371337133713371337133713371337133713371337133713371337133713371337133713371337133713371337133713371337133713371337133713371337133713371337", prefer_integers=True)
     if 'x' in res and 'y' in res:
         print(f"\nResult x: {res['x']}")
         print(f"Result y: {res['y']}")

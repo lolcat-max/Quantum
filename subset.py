@@ -391,8 +391,8 @@ if __name__ == "__main__":
 
     # Randomize Subset Sum at Beginning (your numbers list)
     subset_size = 590
-    random_numbers = [random.randint(1, 500) for _ in range(subset_size)]
-    random_subset = random.sample(random_numbers, subset_size)
+    random_numbers = [random.randint(1, 11500) for _ in range(subset_size)]
+    random_subset = random.sample(random_numbers, 8)
     target = sum(random_subset)
     print(f"\n[Randomized Demo] Generated Subset: {sorted(random_subset)}")
     print(f"Generated Target Sum: {target}")

@@ -89,7 +89,8 @@ class NuclearSSPSimulator:
             'Calcium (Ca-40)': {
                 'Z': 20, 'N': 20, 'BE': 342.052, 'BE_per_A': 8.551, 'SEP_n': 15.64, 'SEP_p': 8.33,
                 'shells': [2, 8, 18, 12], 'magic': True, 'stability': 'stable',
-                'production_MeV': 342.052, 'formation': 'Silicon burning'
+                'production_MeV': 342.052,
+                'formation': 'Silicon burning'
             },
             'Iron (Fe-56)': {
                 'Z': 26, 'N': 30, 'BE': 492.254, 'BE_per_A': 8.790, 'SEP_n': 11.20, 'SEP_p': 7.65,
@@ -233,6 +234,7 @@ class NuclearSSPSimulator:
                 'production_MeV': 1640.238, 'formation': 's-process endpoint (N=126 magic)'
             }
         }
+
         # Molecular and compound combinations
         self.molecular_data = {
             'H2 (Hydrogen gas)': {
@@ -585,7 +587,7 @@ class NuclearSSPSimulator:
             self.add_log(f"    (Energy to assemble from {data['Z']} protons + {data['N']} neutrons)", 'white')
             
             self.status_label.config(text=f"{atom_clean} - BE={data['BE']:.1f} MeV")
-        
+            
     def generate_problem(self):
         try:
             set_size = int(self.size_var.get())
@@ -659,7 +661,7 @@ class NuclearSSPSimulator:
                 self.add_log(f"  Energy range: {min(self.numbers)} - {max(self.numbers)} keV", 'white')
                 
             elif atom != 'Custom':
-                # Handle single atoms (existing code)
+                # Handle single atoms
                 data = self.atomic_data[atom_clean]
                 A = data['Z'] + data['N']
                 
@@ -821,7 +823,7 @@ class NuclearSSPSimulator:
         if not self.numbers:
             self.add_log("✗ Generate a problem first!", 'red')
             return
-            
+        
         def run():
             self.running = True
             self.solve_btn.config(state='disabled')
@@ -973,7 +975,7 @@ class NuclearSSPSimulator:
         if not self.numbers:
             self.add_log("✗ Generate a problem first!", 'red')
             return
-            
+        
         def run():
             self.running = True
             self.anneal_btn.config(state='disabled')
@@ -999,7 +1001,7 @@ class NuclearSSPSimulator:
                 i = random.randint(0, n - 1)
                 force = (self.target - current_sum) / (self.numbers[i] + 1)
                 inclusions[i] = max(0, min(1, inclusions[i] + force * 0.01))
-                
+            
             # Threshold to binary
             subset = [self.numbers[i] for i in range(n) if round(inclusions[i]) == 1]
             elapsed = time.time() - start

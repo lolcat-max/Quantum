@@ -390,7 +390,7 @@ class IslandOfStabilitySimulator:
 
         self.pred_text = scrolledtext.ScrolledText(pred_frame, height=12,
                                                    bg='#0f0f2e', fg='#00ff41',
-                                                   font=('Courier', 7), wrap=tk.WORD)
+                                                   font=('Courier', 10), wrap=tk.WORD)
         self.pred_text.pack(fill=tk.BOTH, expand=True, padx=3, pady=3)
 
         # Right panel - Visualizations

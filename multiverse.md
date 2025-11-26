@@ -1,0 +1,1 @@
+To determine if the multiverse exists is to use a half slowed superposition laser connected to a panning motor isolated from a sensor, and where superposition is detected, move the motor. If the laser detaches from the sensor both events have causes from separate universes.

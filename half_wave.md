@@ -1,0 +1,1 @@
+Latest half wave theory: the wavefunction passes through a double slit in one beam direction (be it a cube beam splitter on top of a CO2 mirror and double slit), and standard polarisation is opposite when the entangled which way information is measured.

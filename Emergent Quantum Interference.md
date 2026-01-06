@@ -1,4 +1,3 @@
-<img src="https://r2cdn.perplexity.ai/pplx-full-logo-primary-dark%402x.png" style="height:64px;margin-right:32px"/>
 
 # Emergent Quantum Interference from Compressional Pings in Flattened 4D Spacetime Lattices
 

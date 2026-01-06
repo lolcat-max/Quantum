@@ -1,10 +1,4 @@
 
-# Each atom has the c symmetric timing for superposition coordinates, for example, blackholes really are uncoordinated voids (mass relays).
-
-do a paper
-
-This paper presents a theoretical framework that links the temporal symmetry of atomic superpositions to the macroscopic role of black holes as "mass relays" within the cosmic web. We argue that the "timing" of quantum state transitions is governed by charge conjugation (C-symmetry), which coordinates the phase of atomic superposition coordinates. Furthermore, we redefine black holes as "uncoordinated voids"—regions where standard metric symmetry breaks down to facilitate the non-local transport of baryonic matter into cosmic voids.[^1][^2][^3][^4][^5][^6]
-
 ## C-Symmetric Atomic Timing
 
 In this model, the "c-symmetric timing" of an atom refers to the fundamental role of charge conjugation in determining the temporal phase of its wavefunction. Because CPT symmetry (Charge-Parity-Time) is a conserved law, any violation or oscillation in the charge state of a superposed particle must be mirrored by a corresponding shift in its temporal coordinate.[^7][^2][^8][^9]
